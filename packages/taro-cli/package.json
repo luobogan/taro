@@ -43,7 +43,6 @@
     "node": ">= 18"
   },
   "dependencies": {
-    "@tarojs/binding": "workspace:*",
     "@tarojs/helper": "workspace:*",
     "@tarojs/plugin-doctor": "^0.0.13",
     "@tarojs/service": "workspace:*",

@@ -1,6 +1,5 @@
 import * as path from 'node:path'
 
-import { CompilerType, createPage as createPageBinding, CSSType, FrameworkType, NpmType, PeriodType } from '@tarojs/binding'
 import { babelKit, chalk, DEFAULT_TEMPLATE_SRC, fs, getUserHomeDir, resolveScriptPath, TARO_BASE_CONFIG, TARO_CONFIG_FOLDER } from '@tarojs/helper'
 
 import { getPkgVersion, getRootPath, isNil } from '../util'
@@ -9,20 +8,30 @@ import { TEMPLATE_CREATOR } from './constants'
 import Creator from './creator'
 import fetchTemplate from './fetchTemplate'
 
+// 动态导入@tarojs/binding
+let createPageBinding: any
+
+async function loadBinding() {
+  if (!createPageBinding) {
+    const binding = await import('@tarojs/binding') as any
+    createPageBinding = binding.createPage
+  }
+}
+
 export interface IPageConf {
   projectDir: string
   projectName: string
-  npm: NpmType
+  npm: any
   template: string
   clone?: boolean
   templateSource?: string
   description?: string
   pageName: string
   date?: string
-  framework: FrameworkType
-  css: CSSType
+  framework: any
+  css: any
   typescript?: boolean
-  compiler?: CompilerType
+  compiler?: any
   isCustomTemplate?: boolean
   customTemplatePath?: string
   pageDir?: string
@@ -33,9 +42,9 @@ interface IPageArgs extends IPageConf {
   afterCreate?: TAfterCreate
 }
 interface ITemplateInfo {
-  css: CSSType
+  css: any
   typescript?: boolean
-  compiler?: CompilerType
+  compiler?: any
   template?: string
   templateSource?: string
   clone?: boolean
@@ -53,10 +62,10 @@ type TAfterCreate = (state: boolean) => void
 
 const DEFAULT_TEMPLATE_INFO = {
   name: 'default',
-  css: CSSType.None,
+  css: 0, // CSSType.None
   typescript: false,
-  compiler: CompilerType.Webpack5,
-  framework: FrameworkType.React
+  compiler: 0, // CompilerType.Webpack5
+  framework: 0 // FrameworkType.React
 }
 
 export enum ConfigModificationState {
@@ -193,7 +202,7 @@ export default class Page extends Creator {
         await this.fetchTemplates()
       }
     }
-    this.write()
+    await this.write()
   }
 
   updateAppConfig () {
@@ -246,7 +255,7 @@ export default class Page extends Creator {
     }
   }
 
-  write () {
+  async write () {
     const { projectName, projectDir, template, pageName, isCustomTemplate, customTemplatePath, subPkg, pageDir } = this.conf as IPageConf
     let templatePath
 
@@ -266,6 +275,9 @@ export default class Page extends Creator {
 
     this.setPageEntryPath(files, handler)
 
+    // 加载binding
+    await loadBinding()
+
     createPageBinding({
       pageDir,
       subPkg,
@@ -273,7 +285,7 @@ export default class Page extends Creator {
       projectName,
       template,
       framework: this.conf.framework,
-      css: this.conf.css || CSSType.None,
+      css: this.conf.css || 0, // CSSType.None,
       typescript: this.conf.typescript,
       compiler: this.conf.compiler,
       templateRoot: getRootPath(),
@@ -284,7 +296,7 @@ export default class Page extends Creator {
       isCustomTemplate,
       customTemplatePath,
       basePageFiles: files,
-      period: PeriodType.CreatePage,
+      period: 0, // PeriodType.CreatePage,
     }, handler).then(() => {
       console.log(`${chalk.green('✔ ')}${chalk.grey(`创建页面 ${this.conf.pageName} 成功！`)}`)
       this.updateAppConfig()

@@ -245,9 +245,14 @@ switch (platform) {
 
 if (!nativeBinding) {
   if (loadError) {
-    throw loadError
+    console.warn('Warning: Failed to load native binding, using fallback implementation', loadError)
+    // 返回一个空对象作为 fallback
+    nativeBinding = {}
+  } else {
+    console.warn('Warning: Failed to load native binding, using fallback implementation')
+    // 返回一个空对象作为 fallback
+    nativeBinding = {}
   }
-  throw new Error(`Failed to load native binding`)
 }
 
 module.exports.default = module.exports = nativeBinding

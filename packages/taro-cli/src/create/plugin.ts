@@ -1,10 +1,19 @@
 import * as path from 'node:path'
 
-import { createPlugin } from '@tarojs/binding'
 import { chalk, fs } from '@tarojs/helper'
 
 import { getRootPath } from '../util'
 import Creator from './creator'
+
+// 动态导入@tarojs/binding
+let createPlugin: any
+
+async function loadBinding() {
+  if (!createPlugin) {
+    const binding = await import('@tarojs/binding')
+    createPlugin = binding.createPlugin
+  }
+}
 
 export interface IPluginConf {
   pluginName: string
@@ -42,6 +51,9 @@ export default class Plugin extends Creator {
       console.log(chalk.red(`创建插件失败：找不到模板${templatePath}`))
       return
     }
+    // 加载binding
+    await loadBinding()
+
     createPlugin({
       projectRoot: projectDir,
       projectName: pluginName,

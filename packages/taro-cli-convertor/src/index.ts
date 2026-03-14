@@ -4,7 +4,7 @@ import * as path from 'node:path'
 import template from '@babel/template'
 import traverse, { NodePath } from '@babel/traverse'
 import * as t from '@babel/types'
-import { CompilerType, Creator, CSSType, FrameworkType } from '@tarojs/binding'
+// 动态导入@tarojs/binding
 import { getRootPath } from '@tarojs/cli'
 import {
   chalk,
@@ -183,7 +183,7 @@ export default class Convertor {
   entryJSON: AppConfig & { usingComponents?: Record<string, string> }
   entryStyle: string
   entryUsingComponents: Record<string, string>
-  framework: FrameworkType
+  framework: string
   isTsProject: boolean
   miniprogramRoot: string
   convertConfig: IConvertConfig
@@ -1580,7 +1580,7 @@ export default class Convertor {
   }
 
   private getComponentDest (file: string) {
-    if (this.framework === FrameworkType.React) {
+    if (this.framework === 'react') {
       return file
     }
 
@@ -2068,8 +2068,10 @@ export default class Convertor {
     }
   }
 
-  generateConfigFiles () {
-    const creator = new Creator(getRootPath(), this.convertRoot)
+  async generateConfigFiles () {
+    // 动态导入@tarojs/binding并使用Creator
+    const binding = await import('@tarojs/binding')
+    const creator = new binding.Creator(getRootPath(), this.convertRoot)
     const dateObj = new Date()
     const date = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`
     const templateName = 'default'
@@ -2078,7 +2080,7 @@ export default class Convertor {
     const description = ''
     const ps: Promise<void>[] = []
     const createOpts = {
-      css: CSSType.Sass,
+      css: 'sass',
       cssExt: '.scss',
       framework: this.framework,
       description,
@@ -2087,7 +2089,7 @@ export default class Convertor {
       date,
       typescript: false,
       template: templateName,
-      compiler: CompilerType.Webpack5,
+      compiler: 'webpack5',
     }
     ps.push(creator.createFileFromTemplate(templateName, 'package.json.tmpl', 'package.json', createOpts))
     ps.push(creator.createFileFromTemplate(templateName, 'config/index.js', 'config/index.js', createOpts))
@@ -2168,7 +2170,7 @@ export default class Convertor {
 
   run () {
     try {
-      this.framework = FrameworkType.React
+      this.framework = 'react'
       this.generateEntry()
       this.traversePages(this.root, this.pages)
       this.traversePlugin()

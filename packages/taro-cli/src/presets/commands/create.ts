@@ -37,7 +37,7 @@ export default (ctx: IPluginContext) => {
       'taro create --name=page --description=desc',
       'taro create my-plugin --type=plugin-command',
     ],
-    fn ({ _, options }) {
+    async fn ({ _, options }) {
       const type = options.type || createTemplateTypeEnum.PAGE
       const name = _[1] || options.name
       const description = options.description || ''
@@ -74,7 +74,7 @@ export default (ctx: IPluginContext) => {
             }
           })
 
-          page.create()
+          await page.create()
           break
         }
         case createTemplateTypeEnum.PLUGIN_COMMAND:
@@ -94,7 +94,7 @@ export default (ctx: IPluginContext) => {
             template: 'plugin-compile'
           })
 
-          plugin.create()
+          await plugin.create()
           break
         }
         default:

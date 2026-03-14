@@ -1,4 +1,4 @@
-import { FrameworkType } from '@tarojs/binding'
+// 使用字符串常量替代FrameworkType
 import { normalizePath } from '@tarojs/helper'
 
 import Convertor from '../src/index'
@@ -18,6 +18,10 @@ import {
   USINGCOMPONENTS_FILE_DATA,
 } from './data/fileData'
 import { removeBackslashesSerializer } from './util'
+
+const FrameworkType = {
+  React: 'react'
+}
 
 expect.addSnapshotSerializer(removeBackslashesSerializer)
 

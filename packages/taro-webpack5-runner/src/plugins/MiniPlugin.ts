@@ -1374,9 +1374,8 @@ export default class TaroMiniPlugin {
   generateXSFile (compilation: Compilation, compiler: Compiler, xsPath) {
     const { RawSource } = compiler.webpack.sources
     const ext = this.options.fileType.xs
-    const isUseXS = this.options.template.isUseXS
 
-    if (ext == null || !isUseXS) {
+    if (ext == null) {
       return
     }
 

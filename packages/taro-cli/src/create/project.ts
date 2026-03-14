@@ -1,6 +1,6 @@
 import * as path from 'node:path'
 
-import { CompilerType, createProject, CSSType, FrameworkType, NpmType, PeriodType } from '@tarojs/binding'
+// 动态导入@tarojs/binding
 import {
   chalk,
   DEFAULT_TEMPLATE_SRC,
@@ -27,22 +27,22 @@ import type { ITemplates } from './fetchTemplate'
 export interface IProjectConf {
   projectName: string
   projectDir: string
-  npm: NpmType
+  npm: string
   templateSource: string
   clone?: boolean
   template: string
   description?: string
   typescript?: boolean
   buildEs5?: boolean
-  css: CSSType
+  css: string
   date?: string
   src?: string
   sourceRoot?: string
   env?: string
   autoInstall?: boolean
   hideDefaultTemplate?: boolean
-  framework: FrameworkType
-  compiler?: CompilerType
+  framework: string
+  compiler?: string
   ask?: (config: object) => Promise<void> | void
 }
 
@@ -114,8 +114,8 @@ export default class Project extends Creator {
 
     // Note: 由于 Solid 框架适配 Vite 还存在某些问题，所以在选择 Solid 框架时，不再询问编译工具
     prompts = []
-    if (answers.framework === FrameworkType.Solid || conf.framework === FrameworkType.Solid) {
-      answers.compiler = CompilerType.Webpack5
+    if (answers.framework === 'solid' || conf.framework === 'solid') {
+      answers.compiler = 'webpack5'
     } else {
       this.askCompiler(conf, prompts)
     }
@@ -213,19 +213,19 @@ export default class Project extends Creator {
     const cssChoices = [
       {
         name: 'Sass',
-        value: CSSType.Sass
+        value: 'sass'
       },
       {
         name: 'Less',
-        value: CSSType.Less
+        value: 'less'
       },
       {
         name: 'Stylus',
-        value: CSSType.Stylus
+        value: 'stylus'
       },
       {
         name: '无',
-        value: CSSType.None
+        value: 'none'
       }
     ]
 
@@ -243,11 +243,11 @@ export default class Project extends Creator {
     const compilerChoices = [
       {
         name: 'Webpack5',
-        value: CompilerType.Webpack5
+        value: 'webpack5'
       },
       {
         name: 'Vite',
-        value: CompilerType.Vite
+        value: 'vite'
       }
     ]
 
@@ -265,19 +265,19 @@ export default class Project extends Creator {
     const frameworks = [
       {
         name: 'React',
-        value: FrameworkType.React
+        value: 'react'
       },
       {
         name: 'PReact',
-        value: FrameworkType.Preact
+        value: 'preact'
       },
       {
         name: 'Vue3',
-        value: FrameworkType.Vue3
+        value: 'vue3'
       },
       {
         name: 'Solid',
-        value: FrameworkType.Solid
+        value: 'solid'
       }
     ]
 
@@ -397,19 +397,19 @@ export default class Project extends Creator {
     const packages = [
       {
         name: 'yarn',
-        value: NpmType.Yarn
+        value: 'yarn'
       },
       {
         name: 'pnpm',
-        value: NpmType.Pnpm
+        value: 'pnpm'
       },
       {
         name: 'npm',
-        value: NpmType.Npm
+        value: 'npm'
       },
       {
         name: 'cnpm',
-        value: NpmType.Cnpm
+        value: 'cnpm'
       }
     ]
 
@@ -468,32 +468,36 @@ export default class Project extends Creator {
     return newTemplateChoices
   }
 
-  write (cb?: () => void) {
+  async write (cb?: () => void) {
     this.conf.src = SOURCE_DIR
     const { projectName, projectDir, template, autoInstall = true, framework, npm } = this.conf as IProjectConf
     // 引入模板编写者的自定义逻辑
     const templatePath = this.templatePath(template)
     const handlerPath = path.join(templatePath, TEMPLATE_CREATOR)
     const handler = fs.existsSync(handlerPath) ? require(handlerPath).handler : {}
-    createProject({
-      projectRoot: projectDir,
-      projectName,
-      template,
-      npm,
-      framework,
-      css: this.conf.css || CSSType.None,
-      autoInstall: autoInstall,
-      templateRoot: getRootPath(),
-      version: getPkgVersion(),
-      typescript: this.conf.typescript,
-      buildEs5: this.conf.buildEs5,
-      date: this.conf.date,
-      description: this.conf.description,
-      compiler: this.conf.compiler,
-      period: PeriodType.CreateAPP,
-    }, handler).then(() => {
+    try {
+      const binding = await import('@tarojs/binding')
+      await binding.createProject({
+        projectRoot: projectDir,
+        projectName,
+        template,
+        npm,
+        framework,
+        css: this.conf.css || 'none',
+        autoInstall: autoInstall,
+        templateRoot: getRootPath(),
+        version: getPkgVersion(),
+        typescript: this.conf.typescript,
+        buildEs5: this.conf.buildEs5,
+        date: this.conf.date,
+        description: this.conf.description,
+        compiler: this.conf.compiler,
+        period: 'createApp',
+      }, handler)
       cb && cb()
-    })
+    } catch (error) {
+      console.log(chalk.red('创建项目失败: ', error))
+    }
   }
 }
 

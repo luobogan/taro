@@ -115,7 +115,7 @@ export default class TaroNormalModulesPlugin {
                 return
               }
 
-              function getPropName (key): string {
+              function getPropName (key): string | null {
                 return key.type === 'Identifier' ? key.name : (key.type === 'Literal' ? key.value : null)
               }
 
