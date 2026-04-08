@@ -104,28 +104,29 @@ class Animation implements Taro.Animation {
     // 监听事件
     document.body.addEventListener(TRANSITION_END, (e: TransitionEvent) => {
       const target = e.target as HTMLElement
-      if (target.getAttribute(animAttr) === null) {
-        animAttr = 'data-animation'
-      }
-      const animData = target.getAttribute(animAttr)
-      // 没有动画存在
-      if (animData === null) return
-      const [animName, animPath] = animData.split('__')
-      if (animName === `taro-h5-poly-fill/${this.id}/create-animation`) {
-        const [animIndex, __stepIndex = 0] = animPath.split('--')
-        const stepIndex = Number(__stepIndex)
-        // 动画总的关键帧
-        const animStepsCount = this.animationMap[`${animName}__${animIndex}`]
-        const animStepsMaxIndex = animStepsCount - 1
-        if (stepIndex < animStepsMaxIndex) {
-          // 播放下一个关键帧（因为 nerv 和 react 有差异所以 animation & data-animation 都需要写）
-          target.setAttribute(animAttr, `${animName}__${animIndex}--${stepIndex + 1}`)
-          if (animAttr === 'data-animation') {
-            // Nerv 环境，animation & data-animation 双重保险
-            target.setAttribute('animation', `${animName}__${animIndex}--${stepIndex + 1}`)
+      if (target && typeof target.getAttribute === 'function') {
+        if (target.getAttribute(animAttr) === null) {
+          animAttr = 'data-animation'
+        }
+        const animData = target.getAttribute(animAttr)
+        // 没有动画存在
+        if (animData === null) return
+        const [animName, animPath] = animData.split('__')
+        if (animName === `taro-h5-poly-fill/${this.id}/create-animation`) {
+          const [animIndex, __stepIndex = 0] = animPath.split('--')
+          const stepIndex = Number(__stepIndex)
+          // 动画总的关键帧
+          const animStepsCount = this.animationMap[`${animName}__${animIndex}`]
+          const animStepsMaxIndex = animStepsCount - 1
+          if (stepIndex < animStepsMaxIndex) {
+            // 播放下一个关键帧（因为 nerv 和 react 有差异所以 animation & data-animation 都需要写）
+            target.setAttribute(animAttr, `${animName}__${animIndex}--${stepIndex + 1}`)
+            if (animAttr === 'data-animation') {
+              // Nerv 环境，animation & data-animation 双重保险
+              target.setAttribute('animation', `${animName}__${animIndex}--${stepIndex + 1}`)
+            }
           }
         }
-      }
     })
   }
 

@@ -4,6 +4,7 @@ import ts from '@rollup/plugin-typescript'
 import { merge } from 'lodash-es'
 import { defineConfig } from 'rollup'
 import externals from 'rollup-plugin-node-externals'
+import json from '@rollup/plugin-json'
 
 const baseConfig = {
   output: {
@@ -23,6 +24,7 @@ function getPlugins(pre = [], post = []) {
     }),
     ts(),
     commonjs(),
+    json(),
     ...post,
   ]
 }

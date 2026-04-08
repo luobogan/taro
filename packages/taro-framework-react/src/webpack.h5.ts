@@ -68,7 +68,12 @@ function setPlugin (ctx: IPluginContext, framework: Frameworks, chain) {
   if (!isProd && config.h5?.devServer?.hot !== false) {
     // 默认开启 fast-refresh
     if (framework === 'react') {
-      chain.plugin('fastRefreshPlugin').use(require('@pmmmwh/react-refresh-webpack-plugin'))
+      try {
+        const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
+        chain.plugin('fastRefreshPlugin').use(ReactRefreshWebpackPlugin)
+      } catch (e) {
+        console.warn('@pmmmwh/react-refresh-webpack-plugin is not installed, fast refresh will be disabled')
+      }
     } else if (framework === 'preact') {
       chain.plugin('hotModuleReplacementPlugin').use(require('webpack').HotModuleReplacementPlugin)
       chain.plugin('fastRefreshPlugin').use(require('@prefresh/webpack'))

@@ -52,7 +52,12 @@ module.exports = (_, options = {}) => {
     ])
     if (process.env.TARO_PLATFORM === 'web' && process.env.NODE_ENV !== 'production' && options.hot !== false) {
       if (options.framework === 'react') {
-        plugins.push([require('react-refresh/babel'), { skipEnvCheck: true }])
+        try {
+          require('@pmmmwh/react-refresh-webpack-plugin')
+          plugins.push([require('react-refresh/babel'), { skipEnvCheck: true }])
+        } catch (e) {
+          // react-refresh-webpack-plugin is not installed, skip adding babel plugin
+        }
       } else if (options.framework === 'preact') {
         overrides.push({
           include: /\.[jt]sx$/,

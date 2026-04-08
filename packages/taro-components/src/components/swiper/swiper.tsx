@@ -449,7 +449,7 @@ export class Swiper implements ComponentInterface {
     const slides = swiper.slides
     const activeIndex = swiper.activeIndex
     const currentSlide = slides[activeIndex]
-    return currentSlide.getAttribute('item-id')
+    return currentSlide && typeof currentSlide.getAttribute === 'function' ? currentSlide.getAttribute('item-id') : null
   }
 
   render () {

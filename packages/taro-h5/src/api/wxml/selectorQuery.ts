@@ -97,21 +97,33 @@ function filter (fields, dom?: HTMLElement, selector?: string) {
     }
   }
   if (scrollOffset) {
-    res.scrollLeft = dom.scrollLeft
-    res.scrollTop = dom.scrollTop
+    if (dom) {
+      res.scrollLeft = dom.scrollLeft || 0
+      res.scrollTop = dom.scrollTop || 0
+    }
   }
   if (properties.length) {
     properties.forEach(prop => {
-      const attr = dom.getAttribute(prop)
-      if (attr) res[prop] = attr
+      if (dom && typeof dom.getAttribute === 'function') {
+        const attr = dom.getAttribute(prop)
+        if (attr) res[prop] = attr
+      }
     })
   }
   if (computedStyle.length) {
-    const styles = window.getComputedStyle(dom)
-    computedStyle.forEach(key => {
-      const value = styles.getPropertyValue(key) || styles[key]
-      if (value) res[key] = value
-    })
+    if (dom) {
+      try {
+        const styles = window.getComputedStyle(dom)
+        if (styles) {
+          computedStyle.forEach(key => {
+            const value = styles.getPropertyValue(key) || styles[key]
+            if (value) res[key] = value
+          })
+        }
+      } catch (e) {
+        console.warn('Error getting computed style:', e)
+      }
+    }
   }
 
   return res

@@ -41,6 +41,7 @@
   "dependencies": {
     "@tarojs/api": "workspace:*",
     "@tarojs/components": "workspace:*",
+    "@tarojs/taro-react": "workspace:*",
     "@tarojs/router": "workspace:*",
     "@tarojs/runtime": "workspace:*",
     "@tarojs/shared": "workspace:*",

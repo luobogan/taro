@@ -1,4 +1,4 @@
-import definition from '@tarojs/plugin-platform-h5/dist/definition.json'
+import definition from '../../definition.json'
 import isMatchWith from 'lodash-es/isMatchWith'
 import set from 'lodash-es/set'
 

@@ -107,11 +107,11 @@ function filter (fields, dom?: HTMLElement, selector?: string) {
       }
     }
   }
-  if (scrollOffset) {
-    res.scrollLeft = dom.scrollLeft
-    res.scrollTop = dom.scrollTop
+  if (scrollOffset && dom) {
+    res.scrollLeft = dom.scrollLeft || 0
+    res.scrollTop = dom.scrollTop || 0
   }
-  if (properties.length) {
+  if (properties.length && dom && typeof dom.getAttribute === 'function' && typeof dom.hasAttribute === 'function') {
     properties.forEach((prop) => {
       const kebabCaseProp = toKebabCase(prop)
       let attr = dom.getAttribute(prop) || dom.getAttribute(kebabCaseProp)
@@ -123,12 +123,18 @@ function filter (fields, dom?: HTMLElement, selector?: string) {
       }
     })
   }
-  if (computedStyle.length) {
-    const styles = window.getComputedStyle(dom)
-    computedStyle.forEach((key) => {
-      const value = styles.getPropertyValue(key) || styles[key]
-      if (value) res[key] = value
-    })
+  if (computedStyle.length && dom) {
+    try {
+      const styles = window.getComputedStyle(dom)
+      if (styles) {
+        computedStyle.forEach((key) => {
+          const value = styles.getPropertyValue(key) || styles[key]
+          if (value) res[key] = value
+        })
+      }
+    } catch (e) {
+      console.warn('Error getting computed style:', e)
+    }
   }
 
   return res
