@@ -1138,19 +1138,14 @@ export default class TaroMiniPlugin {
         this.generateConfigFile(compilation, compiler, `${name}/${baseCompName}`, {
           component: true,
           styleIsolation: 'apply-shared',
-          usingComponents: {
-            [baseCompName]: `./${baseCompName}`,
-            [customWrapperName]: `./${customWrapperName}`
-          }
+          usingComponents: {}
         })
         this.generateTemplateFile(compilation, compiler, `${name}/${baseCompName}`, template.buildBaseComponentTemplate, this.options.fileType.templ)
       }
       this.generateConfigFile(compilation, compiler, `${name}/${customWrapperName}`, {
         component: true,
         styleIsolation: 'apply-shared',
-        usingComponents: {
-          [customWrapperName]: `./${customWrapperName}`
-        }
+        usingComponents: {}
       })
       this.generateTemplateFile(compilation, compiler, `${name}/${customWrapperName}`, template.buildCustomComponentTemplate, this.options.fileType.templ)
       this.generateXSFile(compilation, compiler, `${name}/utils`)
@@ -1232,20 +1227,14 @@ export default class TaroMiniPlugin {
       const baseCompConfig = {
         component: true,
         styleIsolation: 'apply-shared',
-        usingComponents: {
-          [baseCompName]: `./${baseCompName}`
-        }
+        usingComponents: {}
       } as Config & { component?: boolean, usingComponents: Record<string, string> }
 
       if (isUsingCustomWrapper) {
-        baseCompConfig.usingComponents[customWrapperName] = `./${customWrapperName}`
         this.generateConfigFile(compilation, compiler, customWrapperName, {
           component: true,
           styleIsolation: 'apply-shared',
-          usingComponents: {
-            [baseCompName]: `./${baseCompName}`,
-            [customWrapperName]: `./${customWrapperName}`
-          }
+          usingComponents: {}
         })
       }
 
@@ -1255,9 +1244,7 @@ export default class TaroMiniPlugin {
         this.generateConfigFile(compilation, compiler, customWrapperName, {
           component: true,
           styleIsolation: 'apply-shared',
-          usingComponents: {
-            [customWrapperName]: `./${customWrapperName}`
-          }
+          usingComponents: {}
         })
       }
     }
