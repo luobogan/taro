@@ -1,11 +1,12 @@
 {
   "name": "taro",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "开放式跨端跨框架开发解决方案",
   "homepage": "https://github.com/NervJS/taro#readme",
   "author": "O2Team",
   "private": true,
   "license": "MIT",
+  "packageManager": "pnpm@10.0.0",
   "keywords": [
     "taro"
   ],
